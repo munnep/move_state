@@ -1,25 +1,21 @@
-# move_state
-move statefile
+# Move a resource in the state file
+In this repository you will create 2 resources. You will then change the terraform code in which 1 resource will be in a module. 
 
-# Goal:
-Start with 1 folder with multiple state, end with 2 folder, separate state and module.
-Description:
-We will create 1 folder, and then we will separate into 2 different projects.
-Instructions:
-Create 1 folder with random_pet and null provider
+You will then use the ```terraform mv``` command to make this change to the state file to make sure the resource doesn't get recreated. 
 
-- create a ```main.tf``` with the following content
+# Prerequisites
+
+## Install terraform  
+See the following documentation [How to install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli)
+
+# How to
+- Clone the repository to your local machine
 ```
-resource "random_pet" "name" {
- length    = "4"
- separator = "-"
-}
-
-resource "null_resource" "hello" {
-  provisioner "local-exec" {
-    command = "echo Hello ${random_pet.name.id}"
-  }
-}
+git clone https://github.com/munnep/move_state.git
+```
+- Change your directory
+```
+cd move_state
 ```
 - run terraform init
 ```
@@ -29,17 +25,19 @@ terraform init
 ```
 terraform apply
 ```
-- you should now have a state file
 - create a directory for the module called module_random
 ```
 mkdir module_random
-cd module
 ```
-- create a file ```maint.tf``` under the module_random folder with the following content
+- create a file ```module_random/main.tf``` under the with the following content
 ```
 resource "random_pet" "name" {
- length    = "4"
- separator = "-"
+  length    = "4"
+  separator = "-"
+}
+
+output "name" {
+  value = random_pet.name
 }
 ```
 - change the ```main.tf``` in the root module to the following content
@@ -50,39 +48,43 @@ module "random" {
 
 resource "null_resource" "hello" {
   provisioner "local-exec" {
-    command = "echo Hello ${module.random.random_pet.name.id}"
+    command = "echo Hello ${module.random.name}"
   }
 }
 ```
-- if you run terraform plan it will show the following
+- if you run ```terraform plan``` it will show the following
 ```
 terraform plan
 
+Terraform will perform the following actions:
+
+  # random_pet.name will be destroyed
+  # (because random_pet.name is not in configuration)
+  - resource "random_pet" "name" {
+      - id        = "severely-firmly-vital-octopus" -> null
+      - length    = 4 -> null
+      - separator = "-" -> null
+    }
+
+  # module.random.random_pet.name will be created
+  + resource "random_pet" "name" {
+      + id        = (known after apply)
+      + length    = 4
+      + separator = "-"
+    }
+
+Plan: 1 to add, 0 to change, 1 to destroy.
 ```
-- Terraform wants to recreate the radom_pet resource. We have to move the resource inside the state file to the module notation
+- Terraform wants to recreate the random_pet resource. We have to move the resource inside the state file to the module notation. Use the ```terraform mv``` command to make this change
 ```
 terraform state mv random_pet.name module.random.random_pet.name
 ```
-- 
+- run ```terraform apply``` and this shouldn't make any changes
+```
+terraform apply
+```
+- terraform destroy
+```
+terraform destroy
+```
 
-
-
-
-Run terraform apply, you should end with a new repo created, and state locally.
-
-The goal of this lab is move the random_pet into a separate project.
-
-Hints:
-move state
-modules
-
-
-
-Create 1 folder for sample code, run terraform init / apply
-Create a folder for random_pet
-Make code for a module
-Update code to use module
-Terraform init
-Use terraform state mv to rename the state
-Terraform apply should say the nothing to be created, state should persists.
-Terraform destroy should work and delete the existing state

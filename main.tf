@@ -8,4 +8,3 @@ resource "null_resource" "hello" {
     command = "echo Hello ${random_pet.name.id}"
   }
 }
-
