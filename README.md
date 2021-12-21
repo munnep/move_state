@@ -50,11 +50,21 @@ module "random" {
 
 resource "null_resource" "hello" {
   provisioner "local-exec" {
-    command = "echo Hello ${random_pet.name.id}"
+    command = "echo Hello ${module.random.random_pet.name.id}"
   }
 }
+```
+- if you run terraform plan it will show the following
+```
+terraform plan
 
 ```
+- Terraform wants to recreate the radom_pet resource. We have to move the resource inside the state file to the module notation
+```
+terraform state mv random_pet.name module.random.random_pet.name
+```
+- 
+
 
 
 
