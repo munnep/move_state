@@ -1,7 +1,12 @@
 # Move a resource in the state file
-In this repository you will create 2 resources. You will then change the terraform code in which 1 resource will be in a module. 
+This repository will show you an example on how to use the ```terraform mv``` command to move a resource within a Terraform state file
 
-You will then use the ```terraform mv``` command to make this change to the state file to make sure the resource doesn't get recreated. 
+
+This specific example does the following: 
+- create 2 resources
+- change the terraform code of 1 resource to a module
+- alter the state file by using ```terraform mv```
+
 
 # Prerequisites
 
@@ -17,19 +22,36 @@ git clone https://github.com/munnep/move_state.git
 ```
 cd move_state
 ```
-- run terraform init
+- Terraform initialize
 ```
 terraform init
 ```
-- run terraform apply
+- Terraform apply
 ```
 terraform apply
+```
+```
+Terraform will perform the following actions:
+
+  # null_resource.hello will be created
+  + resource "null_resource" "hello" {
+      + id = (known after apply)
+    }
+
+  # random_pet.name will be created
+  + resource "random_pet" "name" {
+      + id        = (known after apply)
+      + length    = 4
+      + separator = "-"
+    }
+
+Plan: 2 to add, 0 to change, 0 to destroy.
 ```
 - create a directory for the module called module_random
 ```
 mkdir module_random
 ```
-- create a file ```module_random/main.tf``` under the with the following content
+- create a file ```module_random/main.tf``` with the following content
 ```
 resource "random_pet" "name" {
   length    = "4"
@@ -37,10 +59,10 @@ resource "random_pet" "name" {
 }
 
 output "name" {
-  value = random_pet.name
+  value = random_pet.name.id
 }
 ```
-- change the ```main.tf``` in the root module to the following content
+- change the ```main.tf``` in the root module to the following 
 ```
 module "random" {
   source = "./module_random"
@@ -55,7 +77,8 @@ resource "null_resource" "hello" {
 - if you run ```terraform plan``` it will show the following
 ```
 terraform plan
-
+```
+```
 Terraform will perform the following actions:
 
   # random_pet.name will be destroyed
@@ -83,7 +106,10 @@ terraform state mv random_pet.name module.random.random_pet.name
 ```
 terraform apply
 ```
-- terraform destroy
+```
+No changes. Your infrastructure matches the configuration.
+```
+- Destroy the resources
 ```
 terraform destroy
 ```
