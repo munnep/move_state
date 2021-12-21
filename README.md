@@ -74,6 +74,10 @@ resource "null_resource" "hello" {
   }
 }
 ```
+- update module information
+```
+terraform get
+```
 - if you run ```terraform plan``` it will show the following
 ```
 terraform plan
