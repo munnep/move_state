@@ -1,11 +1,11 @@
 # Move a resource in the state file
-This repository will show you an example on how to use the ```terraform mv``` command to move a resource within a Terraform state file
+This repository will show you an example on how to use the ```terraform state mv``` command to move a resource within a Terraform state file
 
 
 This specific example does the following: 
 - create 2 resources
 - change the terraform code of 1 resource to a module
-- alter the state file by using ```terraform mv```
+- alter the state file by using ```terraform state mv```
 
 
 # Prerequisites
@@ -102,7 +102,7 @@ Terraform will perform the following actions:
 
 Plan: 1 to add, 0 to change, 1 to destroy.
 ```
-- Terraform wants to recreate the random_pet resource. We have to move the resource inside the state file to the module notation. Use the ```terraform mv``` command to make this change
+- Terraform wants to recreate the random_pet resource. We have to move the resource inside the state file to the module notation. Use the ```terraform state mv``` command to make this change
 ```
 terraform state mv random_pet.name module.random.random_pet.name
 ```
